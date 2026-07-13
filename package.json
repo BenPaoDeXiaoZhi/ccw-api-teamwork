@@ -1,6 +1,6 @@
 {
   "name": "@ccw-api/teamwork",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Teamwork sdk for ccw",
   "license": "MIT",
   "author": "MengFuzi",
@@ -9,12 +9,12 @@
   "exports": {
     ".": {
       "import": {
-        "default": "./dist/index.js",
-        "types": "./dist/index.d.ts"
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
       },
       "require": {
-        "default": "./dist/index.cjs",
-        "types": "./dist/index.d.cts"
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
       }
     }
   },
@@ -26,7 +26,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsup",
     "dev": "tsup --watch",
-    "prepublish": "npm run build"
+    "prepublishOnly": "npm run build"
   },
   "dependencies": {
     "@ccw-api/api": "^0.10.3",

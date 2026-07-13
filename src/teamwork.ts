@@ -100,7 +100,9 @@ export class Teamwork {
 
   sendProjectEvent(
     type: "assign:other" | "create:other",
-    field: ["gandi", "assets" | "wildExtensions"],
+    field:
+      | ["gandi", "assets" | "wildExtensions"]
+      | ["targets", string, "comments"],
     param: object,
   ) {
     const data = {
@@ -148,8 +150,48 @@ export class Teamwork {
   }
 
   sendChatMessage(message: string) {
-    this.socket.sendBroadcast("forward", {
+    return this.socket.sendBroadcast("forward", {
       chatMessage: [this.userInfo.clientId, message],
     });
+  }
+
+  createComment(
+    targetId: string,
+    comment: {
+      id: string;
+      text: string;
+      x: number;
+      y: number;
+      width: number;
+      height: number;
+      minimized: boolean;
+      blockId: null | string;
+    },
+  ) {
+    return this.sendProjectEvent(
+      "create:other",
+      ["targets", targetId, "comments"],
+      comment,
+    );
+  }
+
+  updateComment(
+    targetId: string,
+    commentDiff: {
+      id: string;
+      text?: string;
+      x?: number;
+      y?: number;
+      width?: number;
+      height?: number;
+      minimized?: boolean;
+      blockId?: null | string;
+    },
+  ) {
+    return this.sendProjectEvent(
+      "assign:other",
+      ["targets", targetId, "comments"],
+      commentDiff,
+    );
   }
 }
