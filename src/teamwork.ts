@@ -1,4 +1,5 @@
-import { communityWeb } from "@ccw-api/api";
+import { communityWeb } from "@ccw-api/api/community-web";
+import { setToken } from "@ccw-api/api/setToken";
 import { TeamworkSocket, getRandomClientId } from "@ccw-api/teamwork-socket";
 
 export interface userInfo {
@@ -13,13 +14,14 @@ export class Teamwork {
   socket: null | TeamworkSocket = null;
   projectId: string;
   clientId: string = getRandomClientId();
-  userInfo: userInfo | null;
+  userInfo: userInfo | null = null;
   constructor(token: string, projectId: string) {
     this.token = token;
+    setToken(token);
     this.projectId = projectId;
   }
 
-  async connect(): Promise<void> {
+  async connect(): Promise<object> {
     const { avatar, name, oid } = await communityWeb.getStudentSelfDetail(
       false,
       false,
@@ -42,7 +44,9 @@ export class Teamwork {
       5000,
     );
     return new Promise((resolve) => {
-      this.socket.addEventListener("connected", () => resolve());
+      this.socket!.addEventListener("connected", (e) =>
+        resolve((e as any).data as object),
+      );
     });
   }
 
@@ -54,13 +58,16 @@ export class Teamwork {
     operateTarget: "TEAMWORK" | "PROJECT",
   ) {
     const content = Object.assign(content_, { operator: this.userInfo });
-    return this.socket.sendRequest("log", {
+    return this.sendRequest("log", {
       content,
       operateTarget,
     });
   }
 
   sendOpenProjectLog() {
+    if (!this.userInfo) {
+      throw new Error("socket userInfo is not initialized!");
+    }
     return this.sendLog(
       {
         key: "openedProject",
@@ -73,6 +80,9 @@ export class Teamwork {
   }
 
   sendCloseProjectLog() {
+    if (!this.userInfo) {
+      throw new Error("socket userInfo is not initialized!");
+    }
     return this.sendLog(
       {
         key: "closedProject",
@@ -85,11 +95,14 @@ export class Teamwork {
   }
 
   dispose() {
+    if (!this.socket) {
+      throw new Error("socket is not initialized!");
+    }
     this.socket.dispose();
   }
 
   sendProfile(profile: { editingTargetId: string }) {
-    return this.socket.sendRequest("profile", profile);
+    return this.sendRequest("profile", profile);
   }
 
   setEditingTarget(editingTargetId: string) {
@@ -105,11 +118,14 @@ export class Teamwork {
       | ["targets", string, "comments"],
     param: object,
   ) {
+    if (!this.userInfo) {
+      throw new Error("socket userInfo is not initialized!");
+    }
     const data = {
       author: this.userInfo.oid,
       events: [[type, field, param]],
     };
-    return this.socket.sendRequest("project", data);
+    return this.sendRequest("project", data);
   }
 
   updateGandiAsset(asset: {
@@ -141,8 +157,22 @@ export class Teamwork {
     return this.sendProjectEvent("create:other", ["gandi", "assets"], asset);
   }
 
+  sendRequest(type: string, dat: object) {
+    if (!this.socket) {
+      throw new Error("socket is not initialized!");
+    }
+    return this.socket.sendRequest(type, dat);
+  }
+
+  sendBroadcast(type: string, dat: object) {
+    if (!this.socket) {
+      throw new Error("socket is not initialized!");
+    }
+    return this.socket.sendBroadcast(type, dat);
+  }
+
   sendScopeMessage(dat: object) {
-    return this.socket.sendRequest("scope", dat);
+    return this.sendRequest("scope", dat);
   }
 
   sendOpenedGandiAssetsScope(id: string) {
@@ -150,7 +180,10 @@ export class Teamwork {
   }
 
   sendChatMessage(message: string) {
-    return this.socket.sendBroadcast("forward", {
+    if (!this.userInfo) {
+      throw new Error("socket userInfo is not initialized!");
+    }
+    return this.sendBroadcast("forward", {
       chatMessage: [this.userInfo.clientId, message],
     });
   }

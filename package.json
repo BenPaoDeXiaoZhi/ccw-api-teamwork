@@ -1,6 +1,6 @@
 {
   "name": "@ccw-api/teamwork",
-  "version": "0.0.2",
+  "version": "0.1.1",
   "description": "Teamwork sdk for ccw",
   "license": "MIT",
   "author": "MengFuzi",
@@ -29,8 +29,8 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "@ccw-api/api": "^0.10.3",
-    "@ccw-api/teamwork-socket": "^1.1.0"
+    "@ccw-api/api": "^0.11.0",
+    "@ccw-api/teamwork-socket": "^2.0.0"
   },
   "devDependencies": {
     "tsup": "^8.5.1",

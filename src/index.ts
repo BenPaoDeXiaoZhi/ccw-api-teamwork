@@ -1,1 +1,1 @@
-export { TeamworkSocket } from "@ccw-api/teamwork-socket";
+export { Teamwork } from "./teamwork";

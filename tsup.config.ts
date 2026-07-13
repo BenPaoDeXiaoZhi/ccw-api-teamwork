@@ -6,4 +6,7 @@ export default defineConfig({
   clean: true,
   minify: true,
   target: "esnext",
+  platform: "browser",
+  treeshake: true,
+  globalName: "Teamwork",
 });
