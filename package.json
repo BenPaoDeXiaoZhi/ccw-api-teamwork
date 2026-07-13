@@ -1,0 +1,43 @@
+{
+  "name": "@ccw-api/teamwork",
+  "version": "0.0.1",
+  "description": "Teamwork sdk for ccw",
+  "license": "MIT",
+  "author": "MengFuzi",
+  "type": "module",
+  "main": "dist/index.js",
+  "exports": {
+    ".": {
+      "import": {
+        "default": "./dist/index.js",
+        "types": "./dist/index.d.ts"
+      },
+      "require": {
+        "default": "./dist/index.cjs",
+        "types": "./dist/index.d.cts"
+      }
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "unpkg": "./dist/index.global.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "prepublish": "npm run build"
+  },
+  "dependencies": {
+    "@ccw-api/api": "^0.10.3",
+    "@ccw-api/teamwork-socket": "^1.1.0"
+  },
+  "devDependencies": {
+    "tsup": "^8.5.1",
+    "typescript": "^6.0.3"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/",
+    "access": "public"
+  }
+}
