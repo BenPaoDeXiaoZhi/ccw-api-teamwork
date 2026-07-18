@@ -1,7 +1,6 @@
 {
   "compilerOptions": {
     "lib": ["ESNext", "DOM"],
-    "ignoreDeprecations": "6.0",
     "strict": true,
     "moduleResolution": "bundler",
     "module": "esnext"

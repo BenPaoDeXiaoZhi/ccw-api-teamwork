@@ -1,5 +1,3 @@
-import { communityWeb } from "@ccw-api/api/community-web";
-import { setToken } from "@ccw-api/api/setToken";
 import { TeamworkSocket, getRandomClientId } from "@ccw-api/teamwork-socket";
 
 export interface userInfo {
@@ -10,37 +8,43 @@ export interface userInfo {
 }
 
 export class Teamwork {
-  token: string;
+  ticket: string;
   socket: null | TeamworkSocket = null;
   projectId: string;
   clientId: string = getRandomClientId();
-  userInfo: userInfo | null = null;
-  constructor(token: string, projectId: string) {
-    this.token = token;
-    setToken(token);
+  userInfo: userInfo;
+  /**
+   * @param ticket teamwork ticket
+   * @param projectId project oid
+   * @param oid user id
+   * @param avatar avatar url
+   * @param name user name
+   */
+  constructor(
+    ticket: string,
+    projectId: string,
+    oid: string,
+    avatar: string = "https://m.xiguacity.cn/icon/new_avatar.png",
+    name = "BOT",
+  ) {
+    this.ticket = ticket;
     this.projectId = projectId;
-  }
-
-  async connect(): Promise<object> {
-    const { avatar, name, oid } = await communityWeb.getStudentSelfDetail(
-      false,
-      false,
-      [],
-    );
     this.userInfo = {
       avatar,
       oid,
       clientId: this.clientId,
       name,
     };
-    const ticket = await communityWeb.produceTeamMemberTicket(this.projectId);
+  }
+
+  async connect(): Promise<object> {
     this.socket = new TeamworkSocket(
       this.projectId,
-      oid,
-      ticket,
+      this.userInfo.oid,
+      this.ticket,
       this.clientId,
-      name,
-      avatar,
+      this.userInfo.name,
+      this.userInfo.avatar,
       5000,
     );
     return new Promise((resolve) => {
